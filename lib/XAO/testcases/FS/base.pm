@@ -21,6 +21,12 @@ sub set_up ($) {
     $self->assert($d{'test_dsn'},
                   "No test configuration available (no .config)");
 
+    if($d{'test_dsn'} eq 'none') {
+        dprint "No DSN configured, skipping all tests";
+        $self->{'skip_db_tests'}=1;
+        return;
+    }
+
     $self->{'odb'}=XAO::Objects->new(
         objname             => 'FS::Glue',
         dsn                 => $d{'test_dsn'},
@@ -72,6 +78,15 @@ sub set_up ($) {
 sub tear_down {
     my $self=shift;
     $self->{odb}=undef;
+}
+
+# Gets an unblessed scalar :(
+#
+sub check_reqs {
+    my ($self,$name)=@_;
+    return 1 unless $self->{'skip_db_tests'};
+    ### dprint "No DSN configured, skipping test ".ref($self)."::".$name;
+    return 0;
 }
 
 sub get_odb {
