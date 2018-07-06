@@ -106,48 +106,56 @@ foreach my $n (keys %{ExtUtils::Manifest::maniread()}) {
 }
 
 WriteMakefile(
-    'AUTHOR'        => 'Andrew Maltsev, https://ejelta.com/xao/',
-    'ABSTRACT'      => 'XAO Foundation Server (OO database layer)',
-    'NAME'          => 'XAO::FS',
-    'VERSION_FROM'  => 'FS.pm',
-    'PREREQ_PM'     => {
-        'DBD::mysql'    => '2.0414',
-        'DBI'           => '1.13',
-        'Error'         => '0.15',
-        'Pod::Usage'    => '1.12',
-        'Test::Unit'    => '0.15',
-        'XAO::Base'     => '1.06',
+    'AUTHOR'            => 'Andrew Maltsev, https://ejelta.com/xao/',
+    'ABSTRACT'          => 'XAO Database Layer',
+    'NAME'              => 'XAO::FS',
+    'VERSION_FROM'      => 'FS.pm',
+    'MIN_PERL_VERSION'  => '5.10.1',
+    'PREREQ_PM'         => {
+        'DBD::mysql'        => '2.0414',
+        'DBI'               => '1.13',
+        'Error'             => '0.15',
+        'XAO::Base'         => '1.18',
+    },
+    'BUILD_REQUIRES' => {
+        'Pod::Usage'        => '1.12',
+    },
+    'TEST_REQUIRES' => {
+        'Test::Unit::Lite'  => '0.212',
     },
     'EXE_FILES'     => [
         'scripts/xao-fs',
     ],
-    'MAN3PODS'      => \%man3pods,
+    'MAN3PODS'          => \%man3pods,
 );
 
 sub MY::postamble
 { <<EOT;
 all::   all-doc
 
+clean::
+\trm -f t/*.pl t/*.xt
+
 all-doc:   doc/design.txt doc/x-list.txt doc/x-hash.txt \\
-	doc/x-collection.txt doc/x-glue.txt \\
-	doc/x-mysql-dbi.txt
+\tdoc/x-collection.txt doc/x-glue.txt \\
+\tdoc/x-mysql-dbi.txt
 
 doc/design.txt:    FS.pm
-	\@COLUMNS=80 pod2text FS.pm > doc/design.txt
+\t\@COLUMNS=80 pod2text FS.pm > doc/design.txt
 
 doc/x-list.txt:    lib/XAO/DO/FS/List.pm
-	\@COLUMNS=80 pod2text lib/XAO/DO/FS/List.pm > doc/x-list.txt
+\t\@COLUMNS=80 pod2text lib/XAO/DO/FS/List.pm > doc/x-list.txt
 
 doc/x-collection.txt:    lib/XAO/DO/FS/Collection.pm
-	\@COLUMNS=80 pod2text lib/XAO/DO/FS/Collection.pm > doc/x-collection.txt
+\t\@COLUMNS=80 pod2text lib/XAO/DO/FS/Collection.pm > doc/x-collection.txt
 
 doc/x-hash.txt:    lib/XAO/DO/FS/Hash.pm
-	\@COLUMNS=80 pod2text lib/XAO/DO/FS/Hash.pm > doc/x-hash.txt
+\t\@COLUMNS=80 pod2text lib/XAO/DO/FS/Hash.pm > doc/x-hash.txt
 
 doc/x-glue.txt:    lib/XAO/DO/FS/Glue.pm
-	\@COLUMNS=80 pod2text lib/XAO/DO/FS/Glue.pm > doc/x-glue.txt
+\t\@COLUMNS=80 pod2text lib/XAO/DO/FS/Glue.pm > doc/x-glue.txt
 
 doc/x-mysql-dbi.txt:    lib/XAO/DO/FS/Glue/MySQL_DBI.pm
-	\@COLUMNS=80 pod2text lib/XAO/DO/FS/Glue/MySQL_DBI.pm > doc/x-mysql-dbi.txt
+\t\@COLUMNS=80 pod2text lib/XAO/DO/FS/Glue/MySQL_DBI.pm > doc/x-mysql-dbi.txt
 EOT
 }
