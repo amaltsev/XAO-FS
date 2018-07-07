@@ -106,15 +106,15 @@ WriteMakefile(
 sub MY::postamble
 { <<EOT;
 all::   all-doc
+\t\@if [ -d .git ]; then (\\
+\t\techo "https://github.com/amaltsev/XAO-FS";\\
+\t\techo "----------------------------------";\\
+\t\techo "";\\
+\t\tgit log -n 10 --no-color 2>/dev/null;\\
+\t\techo "") > CHANGES; fi
 
 clean::
 \trm -f t/*.pl t/*.xt
-
-config::
-\t@(echo "https://github.com/amaltsev/XAO-FS";\\
-\t\techo "----------------------------------";\\
-\t\techo "";\\
-\t\tgit log -n 10 --no-color) > CHANGES
 
 all-doc:   doc/design.txt doc/x-list.txt doc/x-hash.txt \\
 \tdoc/x-collection.txt doc/x-glue.txt \\
