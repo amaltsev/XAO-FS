@@ -1,7 +1,9 @@
 .config
+.config-*
 blib
 Makefile
 Makefile.old
+CHANGES
 pm_to_blib
 MYMETA.*
 t/*.xt

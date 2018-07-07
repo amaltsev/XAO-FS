@@ -80,31 +80,6 @@ EOT
 EOT
 }
 
-# This rather stupid workaround is here because for some reason
-# MakeMaker excludes /Config/ files from MAN3PODS
-#
-my %man3pods;
-foreach my $n (keys %{ExtUtils::Manifest::maniread()}) {
-    next unless $n =~ '^(FS).pm$' ||
-                $n =~ '^lib/XAO/(.*)\.(pm|pod)$';
-    next if $n =~/\/testcases\//;
-    my $man=$1;
-    $man=~s/\/+/::/g;
-    $man='XAO::' . $man;
-
-    open(F,$n) || die "Can't read $n: $!";
-    my $pod=0;
-    while(<F>) {
-        if(/^=(\w+)/) {
-            $pod=1;
-            last;
-        }
-    }
-    $pod || die "$n ($man) does not have documentation";
-
-    $man3pods{$n}='$(INST_MAN3DIR)/' . $man . '.3';
-}
-
 WriteMakefile(
     'AUTHOR'            => 'Andrew Maltsev, https://ejelta.com/xao/',
     'ABSTRACT'          => 'XAO Database Layer',
@@ -115,18 +90,17 @@ WriteMakefile(
         'DBD::mysql'        => '2.0414',
         'DBI'               => '1.13',
         'Error'             => '0.15',
-        'XAO::Base'         => '1.18',
+        'XAO::Base'         => '1.20',
     },
     'BUILD_REQUIRES' => {
         'Pod::Usage'        => '1.12',
     },
     'TEST_REQUIRES' => {
-        'Test::Unit::Lite'  => '0.212',
+        'XAO::Base'         => '1.20',
     },
     'EXE_FILES'     => [
         'scripts/xao-fs',
     ],
-    'MAN3PODS'          => \%man3pods,
 );
 
 sub MY::postamble
@@ -135,6 +109,12 @@ all::   all-doc
 
 clean::
 \trm -f t/*.pl t/*.xt
+
+config::
+\t@(echo "https://github.com/amaltsev/XAO-FS";\\
+\t\techo "----------------------------------";\\
+\t\techo "";\\
+\t\tgit log -n 10 --no-color) > CHANGES
 
 all-doc:   doc/design.txt doc/x-list.txt doc/x-hash.txt \\
 \tdoc/x-collection.txt doc/x-glue.txt \\
