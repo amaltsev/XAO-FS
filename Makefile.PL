@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use warnings;
 use strict;
-use ExtUtils::MakeMaker;
+use ExtUtils::MakeMaker 6.64;
 use ExtUtils::Manifest;
 
 my %d;
@@ -87,16 +87,19 @@ WriteMakefile(
     'VERSION_FROM'      => 'FS.pm',
     'MIN_PERL_VERSION'  => '5.10.1',
     'PREREQ_PM'         => {
-        'DBD::mysql'        => '2.0414',
-        'DBI'               => '1.13',
-        'Error'             => '0.15',
-        'XAO::Base'         => '1.20',
+        'DBD::mysql'            => '2.0414',
+        'DBI'                   => '1.13',
+        'Error'                 => '0.15',
+        'XAO::Base'             => '1.20',
+    },
+    'CONFIGURE_REQUIRES' => {
+        'ExtUtils::MakeMaker'   => '6.64',
     },
     'BUILD_REQUIRES' => {
-        'Pod::Usage'        => '1.12',
+        'Pod::Usage'            => '1.12',
     },
     'TEST_REQUIRES' => {
-        'XAO::Base'         => '1.20',
+        'XAO::Base'             => '1.20',
     },
     'EXE_FILES'     => [
         'scripts/xao-fs',
