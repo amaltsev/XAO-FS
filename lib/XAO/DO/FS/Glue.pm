@@ -706,7 +706,7 @@ sub values ($) {
     my @k=$self->keys;
     my $num=scalar(@k);
     eprint ref($self)."::values - more then 100 keys ($num), consider scanning instead"
-        if $num > 100;
+        if $num > 100 && $self->objtype eq 'List';
     return $self->get(@k);
 }
 
