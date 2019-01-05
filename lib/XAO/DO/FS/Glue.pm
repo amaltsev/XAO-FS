@@ -758,6 +758,53 @@ B<never use the following methods in your applications>.
 
 ###############################################################################
 
+=item _maxlength_change (%)
+
+Upgrades 'maxlength' information for the given text fields both in
+memory structures AND in the database tables.
+
+=cut
+
+sub _maxlength_change ($%) {
+    my $self=shift;
+
+    my $flist=get_args(\@_);
+
+    my $desc=$self->_class_description;
+    my $table=$desc->{'table'};
+
+    my $driver=$self->_driver;
+    my $csh=$driver->maxlength_change_prepare($table);
+
+    foreach my $name (keys %$flist) {
+        my $fdesc=$desc->{'fields'}->{$name} || throw $self "- something went wrong";
+
+        my $maxlength_new=$flist->{$name};
+        my $maxlength_old=$fdesc->{'maxlength'} || throw $self "- no existing maxlength on field '$name'";
+        dprint "...field $name, changing maxlength from '$maxlength_old' to '$maxlength_new'";
+
+        $driver->maxlength_change_field($csh,$name,$maxlength_new,$fdesc);
+
+        $fdesc->{'maxlength'}=$maxlength_new;
+    }
+
+    dprint "....preparing to execute, LAST CHANCE TO ABORT";
+    sleep 3;
+    dprint ".....executing";
+    $driver->maxlength_change_execute($csh);
+
+    foreach my $name (keys %$flist) {
+        my $fdesc=$self->describe($name) || throw $self "- something went wrong";
+
+        my $uid=$driver->unique_id('Global_Fields','field_name',$name,'table_name',$table);
+        $driver->update_fields('Global_Fields',$uid,{ maxlength => $fdesc->{'maxlength'} });
+    }
+
+    dprint "...done";
+}
+
+###############################################################################
+
 =item _charset_change (%)
 
 Upgrades charset information for the given text fields both in memory
