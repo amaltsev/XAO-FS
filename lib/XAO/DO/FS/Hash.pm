@@ -500,8 +500,14 @@ sub build_structure ($%) {
 
         next if $d->{'type'} eq 'key';
 
+        # /project is hard-coded and is not usually a part of any given
+        # structure, keeping it.
+        #
+        my $objname=$self->objname;
+        next if $objname eq 'FS::Global' && $k eq 'project';
+
         push(@{$result{'orphans'}},{
-            class   => $self->objname,
+            class   => $objname,
             field   => $k,
         });
     }
@@ -598,7 +604,10 @@ sub sync_structure ($%) {
 
             dprint "..$class / $field";
 
-            my $obj=$self->_glue->collection(class => $class)->get_new;
+            my $obj=XAO::Objects->new(
+                objname => $class,
+                glue    => $self->_glue,
+            );
 
             $obj->drop_placeholder($field);
         }
